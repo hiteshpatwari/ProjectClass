@@ -21,6 +21,7 @@ public class PostHistoryDAO {
 
 	private static void readXML(File file)
     {
+		// Variables for DOM parser
         Document document;
         DocumentBuilder documentBuilder;
         DocumentBuilderFactory documentBuilderFactory;
