@@ -2,12 +2,14 @@ package main.DAO.posthistory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import main.Connetion.CheckConnection;
 import main.DAO.posthistory.PostHistory;
 
 import org.w3c.dom.Document;
@@ -19,6 +21,11 @@ import org.xml.sax.SAXException;
 
 public class PostHistoryDAO {
 
+	
+	static String path = "/media/Data/StackOverflow/stackoverflow_com/posthistory/cleaned/";
+	static File base_path = new File(path);
+
+	
 	private static void readXML(File file)
     {
 		// Variables for DOM parser
@@ -27,6 +34,7 @@ public class PostHistoryDAO {
         DocumentBuilderFactory documentBuilderFactory;
         NodeList nodeList;
         PostHistory posthistory;
+        CheckConnection chk = new CheckConnection();
         
         try
         {
@@ -86,9 +94,8 @@ public class PostHistoryDAO {
                     	}
                     }
                 }
-                System.out.println(" New Post Fetched !!! ");
-                //System.out.println( post.getPOST_ID() + "\t" + post.getPOST_TEXT() + "\t" + post.getTITLE());
-                
+                chk.insertInDB(posthistory);
+                System.out.println(index + " records Inserted in DB");
             }
         }
         catch (Exception exception)
@@ -98,9 +105,17 @@ public class PostHistoryDAO {
     }
 
 	public static void main(String [] args) throws SAXException, IOException, ParserConfigurationException {
+	
+		File [] files = new File[base_path.listFiles().length];
 		
-		File file = new File("/media/Data/StackOverflow/stackoverflow_com/posthistory/cleaned/000");
+		files = base_path.listFiles();
 		
-		readXML(file);			
+		Arrays.sort(files);
+		
+		for(File f : files) {
+			if(!f.isDirectory()) {
+				readXML(f);
+			}
+		}
 	}
 }
