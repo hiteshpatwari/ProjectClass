@@ -1,6 +1,7 @@
 package main.Connetion;
 
 import main.Cleaning.StopWordsRemoval;
+import main.DAO.Votes.Vote;
 import main.DAO.posthistory.PostHistory;
 
 import com.mongodb.BasicDBObject;
@@ -14,6 +15,7 @@ public class CheckConnection {
 	public static Mongo conn;
 	public static DB db;
 	public static DBCollection postHistoryCollection;
+	public static DBCollection votesCollection;
 	public BasicDBObject dbObject = null;
 	
 	
@@ -32,20 +34,31 @@ public class CheckConnection {
 			if(db.equals(null)) {
 				System.out.println("DB does not exists !!!");
 			}
-			else {
-				System.out.println("whats up ?");
-				postHistoryCollection = db.getCollection("postHistory");
-				
-				System.out.println(postHistoryCollection.getName());
-				
-				if(postHistoryCollection.equals(null)) {
-					postHistoryCollection = db.createCollection("postHistory",dbObject);
-					System.out.println("creating DB object");
-				}
-			}
 		}
 	}
 	
+	public void createVotesCollection() {
+		votesCollection = db.getCollection("votes");
+		
+		System.out.println(votesCollection.getName());
+		
+		if(votesCollection.equals(null)) {
+			votesCollection = db.createCollection("votes", dbObject);
+			System.out.println("creating DB Object");
+		}
+	}
+	
+	public void createPostHistoryCollection() {
+		postHistoryCollection = db.getCollection("postHistory");
+		
+		System.out.println(postHistoryCollection.getName());
+		
+		if(postHistoryCollection.equals(null)) {
+			postHistoryCollection = db.createCollection("postHistory",dbObject);
+			System.out.println("creating DB object");
+		}
+	}
+
 	public void insertInDB(PostHistory postHistoryObj) {
 		dbObject = new BasicDBObject();
 		
@@ -67,7 +80,8 @@ public class CheckConnection {
 		if(postHistoryObj.getCREATION_DATE() == null) {
 			postHistoryObj.setCREATION_DATE("none");
 		}
-		dbObject.put("creation_date", postHistoryObj.getCREATION_DATE());
+		System.out.println(postHistoryObj.getCREATION_DATE().substring(0, 10));
+		dbObject.put("creation_date",  postHistoryObj.getCREATION_DATE().substring(0, 10));
 		
 		if(postHistoryObj.getREVISION_GUID() == null) {
 			postHistoryObj.setREVISION_GUID("none");
@@ -75,7 +89,8 @@ public class CheckConnection {
 		dbObject.put("revision_guid", postHistoryObj.getREVISION_GUID());
 		
 		if(!(postHistoryObj.getTEXT() == null)) {
-			postHistoryObj.setTEXT(StopWordsRemoval.removeWords(postHistoryObj.getTEXT()));
+			//postHistoryObj.setTEXT(postHistoryObj.getTEXT());
+			//postHistoryObj.setTEXT(StopWordsRemoval.removeWords(postHistoryObj.getTEXT()));
 		}
 		else {
 			postHistoryObj.setTEXT("None");
@@ -106,4 +121,40 @@ public class CheckConnection {
 		postHistoryCollection.insert(dbObject);
 	}
 
+	
+	public void insertInDB(Vote voteObj) {
+		dbObject = new BasicDBObject();
+		
+		if(voteObj.getVOTE_ID() == null) {
+			voteObj.setVOTE_ID("None");
+		}
+		dbObject.put("vote_id", voteObj.getVOTE_ID());
+		
+		if(voteObj.getVOTE_POST_ID() == null) {
+			voteObj.setVOTE_POST_ID("none");
+		}
+		dbObject.put("vote_post_id", voteObj.getVOTE_POST_ID());
+		
+		if(voteObj.getVOTE_TYPE_ID() == null) {
+			voteObj.setVOTE_TYPE_ID("none");
+		}
+		dbObject.put("vote_type_id", voteObj.getVOTE_TYPE_ID());
+		
+		if(voteObj.getCREATION_DATE() == null) {
+			voteObj.setCREATION_DATE("none");
+		}
+		dbObject.put("creation_date", voteObj.getCREATION_DATE());
+		
+		if(voteObj.getBOUNTY_AMOUNT() == null) {
+			voteObj.setBOUNTY_AMOUNT("none");
+		}
+		dbObject.put("bounty_amount", voteObj.getBOUNTY_AMOUNT());
+		
+		if(voteObj.getVOTE_USER_ID() == null) {
+			voteObj.setVOTE_USER_ID("none");
+		}
+		dbObject.put("vote_user_id", voteObj.getVOTE_USER_ID());
+		
+		votesCollection.insert(dbObject);
+	}
 }

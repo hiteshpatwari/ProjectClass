@@ -50,6 +50,8 @@ public class PostHistoryDAO {
             String tagValues;
             List<String> tagList = null;
             
+            chk.createPostHistoryCollection();
+            
             for (int index = 0; index < nodeList.getLength(); index++)
             {
             	posthistory = new PostHistory();
@@ -94,6 +96,7 @@ public class PostHistoryDAO {
                     	}
                     }
                 }
+                
                 chk.insertInDB(posthistory);
                 System.out.println(index + " records Inserted in DB");
             }
